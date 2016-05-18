@@ -9,8 +9,11 @@
   "author": "Christopher J. Brody",
   "license": "ISC OR MIT",
   "devDependencies": {
+    "body-parser": "^1.15.1",
+    "express": "^4.13.4",
     "jasmine": "^2.4.1",
-    "promisify-node": "^0.4.0"
+    "promisify-node": "^0.4.0",
+    "supertest": "^1.2.0"
   },
   "dependencies": {
     "sqlite3": "^3.1.4"

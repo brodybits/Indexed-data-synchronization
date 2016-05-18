@@ -34,10 +34,11 @@ A log table and a key index are CREATEd for each store.
 
 The implementation is in `index.coffee` which is compiled using `coffee -c index.coffee`.
 
+There is a sample Express REST interface in the `express-sample` subdirectory. Note that Express is favored over just using Connect to support PassportJS in the future.
+
 FUTURE TBD: Swappable storage layers possible for SQLite, Postgres, redis, etc.
 
 FUTURE TODO:
-- REST API
 - Client-side data synchronization library
 
 ## API
@@ -53,9 +54,9 @@ FUTURE:
 - Check that each key is really unique and that a record for a key is only deleted once
 - Automatic testing, with emphasis on: error handling, verify key is really unique, delete for key that is not present or already deleted
 - Additional indexed keys
+- Subscriptions to store changes (may be accomplished by a simple polling mechanism)
 - Multi-user management
 - Limited multi-user shared stores
-- REST client-server API, perhaps using `superagent` and `connect`/`express` packages
 - REST multi-user security using something like PassportJS
 - Periodically cleanup old history
 - VACUUM or AUTOVACUUM
