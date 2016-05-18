@@ -1,0 +1,17 @@
+{
+  "name": "storage-data-synchronization",
+  "version": "0.0.1-0dev",
+  "description": "Key-value storage data synchronization library (keys must be unique). FUTURE with multiple indexed keys.",
+  "main": "index.js",
+  "scripts": {
+    "test": "node ./node_modules/jasmine/bin/jasmine.js"
+  },
+  "author": "Christopher J. Brody",
+  "license": "ISC OR MIT",
+  "devDependencies": {
+    "jasmine": "^2.4.1"
+  },
+  "dependencies": {
+    "sqlite3": "^3.1.4"
+  }
+}
