@@ -5,7 +5,7 @@ DELETE = 'DELETE'
 
 newSQLiteDataStorageWrapper = (db) ->
   addStore: (storeName, callback) ->
-    db.run "CREATE TABLE #{storeName} (id INTEGER PRIMARY KEY AUTOINCREMENT, key TEXT, type TEXT, value TEXT)", (errorOrNull) =>
+    db.run "CREATE TABLE #{storeName} (id INTEGER PRIMARY KEY AUTOINCREMENT, key TEXT, type TEXT, value TEXT)", (errorOrNull) ->
       if (!!errorOrNull)
         callback errorOrNull
       else
@@ -44,6 +44,5 @@ newSQLiteDataStorage = (dbname, opt_mode) ->
   else
     new sqlite3.Database(dbname)
 
-# XXX TODO:
 module.exports =
-  newSQLiteDataStorage: (dbname, opt_mode) -> newSQLiteDataStorage dbname, opt_mode
+  newSQLiteDataStorage: newSQLiteDataStorage

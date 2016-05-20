@@ -1,4 +1,4 @@
-var i = require('../index.js');
+var factory = require('../sqlite-data-storage-factory.js');
 
 var appFactory = require('../express-sample/express-app-factory.js');
 
@@ -6,8 +6,8 @@ var promisify = require('promisify-node');
 
 var superTest = require('supertest');
 
-describe('asd', function() {
-  it('sdf', function(done) {
+describe('express sample app', function() {
+  it('super-test express sample app', function(done) {
 
     var app = appFactory();
 

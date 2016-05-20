@@ -1,27 +1,27 @@
-i = require '../index.js'
+factory = require '../sqlite-data-storage-factory.js'
 
 express = require 'express'
 bodyParser = require 'body-parser'
 
 promisify = require 'promisify-node'
 
-start = ->
-  MY_DB_NAME = ':memory:'
-  MY_STORE_NAME = 'MyStore'
+DEFAULT_DB_NAME = ':memory:'
+DEFAULT_STORE_NAME = 'MyStore'
 
+start = (dbname = DEFAULT_DB_NAME, storeName = DEFAULT_STORE_NAME) ->
   app = express()
   app.use bodyParser.json()
 
-  db1 = i.newSQLiteDataStorage MY_DB_NAME
+  db1 = factory.newSQLiteDataStorage dbname
   db = promisify db1, undefined, true
-  db.addStore MY_STORE_NAME
+  db.addStore storeName
 
   app.post '/echoBody', (req, res) ->
     res.send req.body
 
   app.post '/add', (req, res) ->
     b = req.body
-    db.addStoreRecord MY_STORE_NAME, b.key, b.value
+    db.addStoreRecord storeName, b.key, b.value
     .then ->
       res.status 200
       res.send()
@@ -31,7 +31,7 @@ start = ->
 
   app.post '/delete', (req, res) ->
     b = req.body
-    db.deleteStoreRecord MY_STORE_NAME, b.key
+    db.deleteStoreRecord storeName, b.key
     .then ->
       res.status 200
       res.send()
@@ -41,7 +41,7 @@ start = ->
 
   app.get '/get', (req, res) ->
     b = req.body
-    db.getStoreRecord MY_STORE_NAME, b.key
+    db.getStoreRecord storeName, b.key
     .then (value) ->
       res.send value
     , (error) ->
@@ -50,7 +50,7 @@ start = ->
 
   app.get '/changes', (req, res) ->
     b = req.body
-    db.getStoreChanges MY_STORE_NAME, b.after
+    db.getStoreChanges storeName, b.after
     .then (changes) ->
       res.send changes
     , (error) ->

@@ -1,12 +1,12 @@
-var i = require('../index.js');
+var factory = require('../sqlite-data-storage-factory.js');
 
 var promisify = require('promisify-node');
 
 describe('basic sqlite storage', function() {
   it('basic sqlite storage functions', function(done) {
-    expect(i.newSQLiteDataStorage).toBeDefined();
+    expect(factory.newSQLiteDataStorage).toBeDefined();
 
-    var db = i.newSQLiteDataStorage(':memory:');
+    var db = factory.newSQLiteDataStorage(':memory:');
     expect(db).toBeDefined();
 
     db.addStore('MyStore', function(errorOrNull) {
@@ -74,7 +74,7 @@ describe('basic sqlite storage', function() {
 
 describe('basic sqlite storage promisify-ed', function() {
   it('basic sqlite storage promisify functions', function(done) {
-    var dbOrig = i.newSQLiteDataStorage(':memory:');
+    var dbOrig = factory.newSQLiteDataStorage(':memory:');
     expect(dbOrig).toBeDefined();
 
     // Promisify the sqlite data storage object without mutating the original:

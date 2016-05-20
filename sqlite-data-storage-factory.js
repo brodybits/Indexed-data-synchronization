@@ -11,17 +11,15 @@
   newSQLiteDataStorageWrapper = function(db) {
     return {
       addStore: function(storeName, callback) {
-        db.run("CREATE TABLE " + storeName + " (id INTEGER PRIMARY KEY AUTOINCREMENT, key TEXT, type TEXT, value TEXT)", (function(_this) {
-          return function(errorOrNull) {
-            if (!!errorOrNull) {
-              return callback(errorOrNull);
-            } else {
-              return db.run("CREATE INDEX " + storeName + "_KEY_INDEX on " + storeName + " (key)", function(errorOrNull) {
-                return callback(null);
-              });
-            }
-          };
-        })(this));
+        db.run("CREATE TABLE " + storeName + " (id INTEGER PRIMARY KEY AUTOINCREMENT, key TEXT, type TEXT, value TEXT)", function(errorOrNull) {
+          if (!!errorOrNull) {
+            return callback(errorOrNull);
+          } else {
+            return db.run("CREATE INDEX " + storeName + "_KEY_INDEX on " + storeName + " (key)", function(errorOrNull) {
+              return callback(null);
+            });
+          }
+        });
       },
       addStoreRecord: function(storeName, key, value, callback) {
         db.run("INSERT INTO " + storeName + " (key, type, value) VALUES (?,?,?)", [key, ADD, value], callback);
@@ -52,9 +50,7 @@
   };
 
   module.exports = {
-    newSQLiteDataStorage: function(dbname, opt_mode) {
-      return newSQLiteDataStorage(dbname, opt_mode);
-    }
+    newSQLiteDataStorage: newSQLiteDataStorage
   };
 
 }).call(this);

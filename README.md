@@ -28,11 +28,11 @@ A client keeps a local copy of the data and keeps track of which data has been s
 
 ## Implementation
 
+The implementation is maintained in CoffeeScript which is compiled by the following command: `npm start`
+
 One or more key-value stores may be stored in a sqlite database using node-sqlite3.
 
 A log table and a key index are CREATEd for each store.
-
-The implementation is in `index.coffee` which is compiled using `coffee -c index.coffee`.
 
 There is a sample Express REST interface in the `express-sample` subdirectory. Note that Express is favored over just using Connect to support PassportJS in the future.
 
@@ -40,6 +40,8 @@ FUTURE TBD: Swappable storage layers possible for SQLite, Postgres, redis, etc.
 
 FUTURE TODO:
 - Client-side data synchronization library
+
+NOTICE: This project assumes a recent version of Node.js with a Promise implementation.
 
 ## API
 
@@ -51,10 +53,11 @@ FUTURE:
 
 ## Major TODOs
 
+- Document the API/usage
 - Check that each key is really unique and that a record for a key is only deleted once
 - Automatic testing, with emphasis on: error handling, verify key is really unique, delete for key that is not present or already deleted
 - Additional indexed keys
-- Subscriptions to store changes (may be accomplished by a simple polling mechanism)
+- Subscriptions to store changes (support some kind of a "notification" system)
 - Multi-user management
 - Limited multi-user shared stores
 - REST multi-user security using something like PassportJS
@@ -64,8 +67,9 @@ FUTURE:
 ## Other TODOs
 
 - Drop store from a database
+- Replace CoffeeScript with ES6
 
 ## References
 
-- https://github.com/axemclion/IndexedDBShim
-- http://www.confluent.io/blog/turning-the-database-inside-out-with-apache-samza/
+- https://github.com/axemclion/IndexedDBShim (inspiration)
+- http://www.confluent.io/blog/turning-the-database-inside-out-with-apache-samza/ (inspiration)
