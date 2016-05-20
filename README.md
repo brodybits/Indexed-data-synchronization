@@ -45,15 +45,19 @@ NOTICE: This project assumes a recent version of Node.js with a Promise implemen
 
 ## API
 
-CURRENT: Server-side SQLite data storage layer only. See `spec/sqlite-storage-spec.js` for API.
+Server-side:
+- SQLite data storage layer: see `spec/sqlite-storage-spec.js` for API.
+- Sample Express application
 
-FUTURE:
-- Server-side: layers that can be assembled into an Express application with multi-user security
-- Client-side: user-friendly 
+Client-side:
+- data synchronization client factory with sample client-side storage stub, see `spec/client-synchronization-spec.js` for API
+- FUTURE TODO: sample client-side AJAX proxy
 
 ## Major TODOs
 
 - Document the API/usage
+- Improve factory API consistency
+- Improve/further testing of two-way client/server data synchronization
 - Check that each key is really unique and that a record for a key is only deleted once
 - Automatic testing, with emphasis on: error handling, verify key is really unique, delete for key that is not present or already deleted
 - Additional indexed keys

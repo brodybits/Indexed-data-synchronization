@@ -4,7 +4,7 @@
   "description": "Key-value storage data synchronization library (keys must be unique). FUTURE with multiple indexed keys.",
   "main": "sqlite-data-storage-factory.js",
   "scripts": {
-    "start": "coffee -c sqlite-data-storage-factory.coffee express-sample/express-app-factory.coffee",
+    "start": "coffee -c *.coffee express-sample/express-app-factory.coffee",
     "test": "node ./node_modules/jasmine/bin/jasmine.js"
   },
   "author": "Christopher J. Brody",
