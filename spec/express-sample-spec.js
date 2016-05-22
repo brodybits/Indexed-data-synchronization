@@ -81,8 +81,8 @@ describe('express sample app', function() {
                   .expect(function(res) {
                     expect(res.status).toBe(200);
                     expect(res.text).toBe(
-                      '[{"change_id":2,"change_type":"ADD","record_key":"second-key","record_value":"second-value"},' +
-                      '{"change_id":3,"change_type":"DELETE","record_key":"test-key","record_value":null}]');
+                      '[{"change_id":2,"change_type":"ADD","record_key":"second-key","index_values":[],"record_value":"second-value"},' +
+                      '{"change_id":3,"change_type":"DELETE","record_key":"test-key","index_values":[],"record_value":null}]');
                   })
                   .expect(200, done);
 

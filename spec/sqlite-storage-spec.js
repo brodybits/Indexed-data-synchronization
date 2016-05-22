@@ -13,11 +13,11 @@ describe('basic sqlite storage', function() {
       expect(errorOrNull).toBe(null);
       if (!!errorOrNull) return done();
 
-      db.addStoreRecord('MyStore', 'first-key', 'first-value', function(errorOrNull) {
+      db.addStoreRecord('MyStore', 'first-key', '', 'first-value', function(errorOrNull) {
         expect(errorOrNull).toBe(null);
         if (!!errorOrNull) return done();
 
-        db.addStoreRecord('MyStore', 'second-key', 'second-value', function(errorOrNull) {
+        db.addStoreRecord('MyStore', 'second-key', '', 'second-value', function(errorOrNull) {
           expect(errorOrNull).toBe(null);
           if (!!errorOrNull) return done();
 
@@ -82,9 +82,9 @@ describe('basic sqlite storage promisify-ed', function() {
     expect(db).toBeDefined();
 
     db.addStore('MyStore').then(function() {
-      return db.addStoreRecord('MyStore', 'first-key', 'first-value');
+      return db.addStoreRecord('MyStore', 'first-key', '', 'first-value');
     }).then(function() {
-      return db.addStoreRecord('MyStore', 'second-key', 'second-value');
+      return db.addStoreRecord('MyStore', 'second-key', '', 'second-value');
 
     }).then(function() {
       return db.deleteStoreRecord('MyStore', 'first-key');

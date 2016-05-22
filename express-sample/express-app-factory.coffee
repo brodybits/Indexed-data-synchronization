@@ -17,7 +17,7 @@ start = (serverdb) ->
 
   app.post '/addStoreRecord', (req, res) ->
     b = req.body
-    db.addStoreRecord b.storeName, b.key, b.value
+    db.addStoreRecord b.storeName, b.key, b.index_values, b.value
     .then ->
       res.status 200
       res.send()

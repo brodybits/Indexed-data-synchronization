@@ -1,7 +1,7 @@
 var dataStorageFactory = require('../sqlite-data-storage-factory.js');
 
 var clientFactory = require('../data-synchronization-client-factory.js');
-var sampleClientStorageFacroty = require('../sample-data-synchronization-client-storage-factory.js');
+var sampleClientStorageFactory = require('../sample-data-synchronization-client-storage-factory.js');
 
 describe('basic synchronization client', function() {
   it('basic synchronization client functions', function(done) {
@@ -16,9 +16,9 @@ describe('basic synchronization client', function() {
     var isOnline = true;
 
     var myServerProxy = {
-      addItem: function(key, value, callback) {
+      addItem: function(key, index_values, value, callback) {
         if (!isOnline) return callback(new Error("offline"));
-        server.addStoreRecord('MyStore', key, value, callback);
+        server.addStoreRecord('MyStore', key, index_values, value, callback);
       },
       deleteItem: function(key, callback) {
         if (!isOnline) return callback(new Error("offline"));
@@ -30,14 +30,14 @@ describe('basic synchronization client', function() {
       }
     };
 
-    var client = clientFactory.newClient(sampleClientStorageFacroty.sampleClientStorage(), myServerProxy);
+    var client = clientFactory.newClient(sampleClientStorageFactory.sampleClientStorage(), myServerProxy);
     expect(client).toBeDefined();
 
     server.addStore('MyStore', function(errorOrNull) {
       expect(errorOrNull).toBe(null);
       if (!!errorOrNull) return done();
 
-      client.addItem('first-key', 'first-value', function(errorOrNull) {
+      client.addItem('first-key', ['first-index0', 'first-index1'], 'first-value', function(errorOrNull) {
         expect(errorOrNull).toBe(null);
         if (!!errorOrNull) return done();
 
@@ -61,7 +61,7 @@ describe('basic synchronization client', function() {
 
             isOnline = false;
 
-            client.addItem('second-key', 'second-value', function(errorOrNull) {
+            client.addItem('second-key', ['second-index0', 'second-index1'], 'second-value', function(errorOrNull) {
               expect(errorOrNull).toBe(null);
               if (!!errorOrNull) return done();
 
@@ -84,7 +84,7 @@ describe('basic synchronization client', function() {
                   if (!!errorOrNull) return done();
 
                   // Inject change from another source:
-                  server.addStoreRecord('MyStore', 'third-key', 'third-value', function(errorOrNull) {
+                  server.addStoreRecord('MyStore', 'third-key', ['third-index0','third-index1'], 'third-value', function(errorOrNull) {
                     expect(errorOrNull).toBe(null);
                     if (!!errorOrNull) return done();
 
@@ -140,8 +140,19 @@ describe('basic synchronization client', function() {
                                 expect(maybeValue).toBeDefined();
                                 expect(maybeValue).toBe('third-value');
 
-                                done();
+                                client.getItemValuesForIndex(1, 'second-index1', function(errorOrNull, maybeValues) {
+                                  expect(maybeValues).toBeDefined();
+                                  expect(maybeValues.length).toBe(1);
+                                  expect(maybeValues[0]).toBe('second-value');
 
+                                  client.getItemValuesForIndex(1, 'third-index1', function(errorOrNull, maybeValues) {
+                                    expect(maybeValues).toBeDefined();
+                                    expect(maybeValues.length).toBe(1);
+                                    expect(maybeValues[0]).toBe('third-value');
+
+                                    done();
+                                  });
+                                });
                               });
                             });
                           });

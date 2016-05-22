@@ -10,8 +10,11 @@
 
   sampleClientStorageWrapper = function(state) {
     return {
-      addItem: function(record_key, value, callback) {
-        state.items[record_key] = value;
+      addItem: function(record_key, index_values, record_value, callback) {
+        state.items[record_key] = {
+          index_values: index_values,
+          record_value: record_value
+        };
         state.addQ.push(record_key);
         nextTick(function() {
           return callback(null);
@@ -30,18 +33,31 @@
           return callback(null);
         });
       },
-      getItemValue: function(itemKey, callback) {
-        var v;
-        v = state.items[itemKey];
-        if (v === void 0) {
+      getItemValue: function(item_key, callback) {
+        var i;
+        i = state.items[item_key];
+        if (i === void 0) {
           nextTick(function() {
-            return callback(new Error("Key " + itemKey + " not found"));
+            return callback(new Error("Key " + item_key + " not found"));
           });
         } else {
           nextTick(function() {
-            return callback(null, v);
+            return callback(null, i.record_value);
           });
         }
+      },
+      getItemValuesForIndex: function(index, index_value, callback) {
+        var item, itemKey, values;
+        values = [];
+        for (itemKey in state.items) {
+          item = state.items[itemKey];
+          if (index < item.index_values.length && item.index_values[index] === index_value) {
+            values.push(item.record_value);
+          }
+        }
+        nextTick(function() {
+          return callback(null, values);
+        });
       },
       syncChangesFromServer: function(changes, callback) {
         var change, j, len;
@@ -56,7 +72,10 @@
             delete state.items[change.record_key];
           } else {
             if ((state.deleteQ.indexOf(change.record_key)) === -1) {
-              state.items[change.record_key] = change.record_value;
+              state.items[change.record_key] = {
+                index_values: change.index_values,
+                record_value: change.record_value
+              };
             }
           }
         }
@@ -83,7 +102,8 @@
           changes.push({
             change_type: 'ADD',
             itemKey: addkey,
-            itemValue: state.items[addkey]
+            index_values: state.items[addkey].index_values,
+            itemValue: state.items[addkey].record_value
           });
         }
         ref1 = state.deleteQ;
@@ -98,9 +118,9 @@
           return callback(null, changes);
         });
       },
-      clearAddChangeForKey: function(itemKey, callback) {
+      clearAddChangeForKey: function(item_key, callback) {
         var i;
-        i = state.addQ.indexOf(itemKey);
+        i = state.addQ.indexOf(item_key);
         if (i !== -1) {
           state.addQ.splice(i, 1);
           return nextTick(function() {

@@ -1,24 +1,20 @@
-# Storage data synchronization
+# Indexed data synchronization
 
 Author: Christopher J. Brody <brodybits@litehelpers.net>
 
-License: ISC OR MIT
+License: ISC
 
 I can hereby testify that this project is completely my own work and not subject to agreements with any other parties. In case of code written under direct guidance from sample code the link is given for reference. In case I accept contributions from any others I will require CLA with similar statements. The license may be changed at some point in the future.
 
-Status: EXPERIMENTAL: under development with API subject to change
+Status: EXPERIMENTAL: WIP under development with API subject to change
 
 ## Data stored
 
-Data is stored in key-value format where:
-- key is a unique string (should be something like a GUID)
-- value is a JSON string
+Data is stored in key-value format along with optional index items. The key must be a globally unique string such as GUID, each indx item is a string, and the value is a JSON string.
 
 Data with a unique key can be stored and optionally deleted at some point in time. Data for a key can never be changed and a key may not be reused once it is deleted.
 
-FUTURE: It will be possible to add additional index keys to make it easier to find arbitrary records.
-
-Applications can store a large number of arbitrary data records with fields that are used to reference other records. The goal is to support arbitrary nested collections with a higher-level client-side API. Mutable items would be simulated by adding attribute records that can be deleted and "overwritten".
+Applications can store a large number of arbitrary data records with fields that are used to reference other records. The goal is to support multiple arbitrary nested collections with a higher-level client-side API. Mutable items would be simulated by adding attribute records that can be "overwritten" (delete the old and add the new).
 
 ## Storage Approach
 
@@ -32,9 +28,9 @@ A client keeps a local copy of the data and keeps track of which data has been s
 
 The implementation is maintained in CoffeeScript which is compiled by the following command: `npm start`
 
-One or more key-value stores may be stored in a sqlite database using node-sqlite3.
+One or more indexed key-value stores may be stored in a sqlite database using node-sqlite3.
 
-A log table ~~and a key index~~ are CREATEd for each store.
+A log table is CREATEd for each store.
 
 There is a sample Express REST interface in the `express-sample` subdirectory. Note that Express is favored over just using Connect to support use with PassportJS.
 
@@ -50,7 +46,7 @@ Server-side:
 
 Client-side:
 - data synchronization client factory with sample client-side storage stub, see `spec/client-synchronization-spec.js` for API
-- FUTURE TODO: sample client-side AJAX proxy
+- TODO: sample client-side AJAX proxy
 
 ## Major TODOs
 
@@ -62,7 +58,6 @@ Client-side:
 - Check that each key is really unique and that a record for a key is only deleted once
 - More automatic testing, with emphasis on: error handling, verify key is really unique, delete for key that is not present or already deleted
 - Distinguish temporary errors vs permanent errors during add/delete/sync
-- Additional indexed keys
 - Subscriptions to store changes (support some kind of a "notification" system)
 - Periodic cleanup of old change history
 - VACUUM or AUTOVACUUM
@@ -70,6 +65,7 @@ Client-side:
 ## Future TBD
 
 May be in a higher-layer API library:
+- Automatic conversion between Javascript value object and stored JSON string value
 - Multi-user management
 - Limited multi-user shared stores
 - REST multi-user security using something like PassportJS

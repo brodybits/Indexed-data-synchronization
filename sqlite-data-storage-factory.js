@@ -11,7 +11,7 @@
   newSQLiteDataStorageWrapper = function(db) {
     return {
       addStore: function(storeName, callback) {
-        db.run("CREATE TABLE " + storeName + " (change_id INTEGER PRIMARY KEY AUTOINCREMENT, change_type TEXT, record_key TEXT, record_value TEXT)", function(errorOrNull) {
+        db.run("CREATE TABLE " + storeName + " (change_id INTEGER PRIMARY KEY AUTOINCREMENT, change_type TEXT," + " record_key TEXT, index_values TEXT, record_value TEXT)", function(errorOrNull) {
           if (!!errorOrNull) {
             return callback(errorOrNull);
           } else {
@@ -21,8 +21,10 @@
           }
         });
       },
-      addStoreRecord: function(storeName, record_key, record_value, callback) {
-        db.run("INSERT INTO " + storeName + " (change_type, record_key, record_value) VALUES (?,?,?)", [ADD, record_key, record_value], callback);
+      addStoreRecord: function(storeName, record_key, index_values, record_value, callback) {
+        var stored_index_values;
+        stored_index_values = !!index_values ? JSON.stringify(index_values) : [];
+        db.run("INSERT INTO " + storeName + " (change_type, record_key, index_values, record_value) VALUES (?,?,?,?)", [ADD, record_key, stored_index_values, record_value], callback);
       },
       deleteStoreRecord: function(storeName, record_key, callback) {
         db.run("INSERT INTO " + storeName + " (change_type, record_key) VALUES (?,?)", [DELETE, record_key], callback);
@@ -40,7 +42,25 @@
         });
       },
       getStoreChanges: function(storeName, after, callback) {
-        return db.all("SELECT * FROM " + storeName + " WHERE change_id>?", [after], callback);
+        db.all("SELECT * FROM " + storeName + " WHERE change_id>?", [after], function(errorOrNull, maybeRows) {
+          var changes, i, len, my_index_values, row;
+          if (!!errorOrNull) {
+            return callback(errorOrNull);
+          }
+          changes = [];
+          for (i = 0, len = maybeRows.length; i < len; i++) {
+            row = maybeRows[i];
+            my_index_values = !!row.index_values && row.index_values.length !== 0 ? JSON.parse(row.index_values) : [];
+            changes.push({
+              change_id: row.change_id,
+              change_type: row.change_type,
+              record_key: row.record_key,
+              index_values: my_index_values,
+              record_value: row.record_value
+            });
+          }
+          return callback(null, changes);
+        });
       }
     };
   };

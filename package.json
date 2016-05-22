@@ -1,6 +1,6 @@
 {
-  "name": "storage-data-synchronization",
-  "version": "0.0.1-0dev",
+  "name": "indexed-data-synchronization",
+  "version": "0.0.1",
   "description": "Key-value storage data synchronization library (keys must be unique). FUTURE with multiple indexed keys.",
   "main": "sqlite-data-storage-factory.js",
   "scripts": {
@@ -8,7 +8,7 @@
     "test": "node ./node_modules/jasmine/bin/jasmine.js"
   },
   "author": "Christopher J. Brody",
-  "license": "ISC OR MIT",
+  "license": "ISC",
   "devDependencies": {
     "body-parser": "^1.15.1",
     "express": "^4.13.4",
@@ -18,5 +18,13 @@
   },
   "dependencies": {
     "sqlite3": "^3.1.4"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brodybits/Indexed-data-synchronization.git"
+  },
+  "bugs": {
+    "url": "https://github.com/brodybits/Indexed-data-synchronization/issues"
+  },
+  "homepage": "https://github.com/brodybits/Indexed-data-synchronization#readme"
 }

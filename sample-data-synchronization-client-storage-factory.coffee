@@ -4,8 +4,8 @@ nextTick = (cb) ->
   setTimeout cb, 0
 
 sampleClientStorageWrapper = (state) ->
-  addItem: (record_key, value, callback) ->
-    state.items[record_key] = value
+  addItem: (record_key, index_values, record_value, callback) ->
+    state.items[record_key] = {index_values: index_values, record_value: record_value}
     state.addQ.push record_key
     nextTick -> callback null
     return
@@ -22,12 +22,21 @@ sampleClientStorageWrapper = (state) ->
     nextTick -> callback null
     return
 
-  getItemValue: (itemKey, callback) ->
-    v = state.items[itemKey]
-    if v is undefined
-      nextTick -> callback new Error "Key #{itemKey} not found"
+  getItemValue: (item_key, callback) ->
+    i = state.items[item_key]
+    if i is undefined
+      nextTick -> callback new Error "Key #{item_key} not found"
     else
-      nextTick -> callback null, v
+      nextTick -> callback null, i.record_value
+    return
+
+  getItemValuesForIndex: (index, index_value, callback) ->
+    values = []
+    for itemKey of state.items
+      item = state.items[itemKey]
+      if index < item.index_values.length and item.index_values[index] is index_value
+        values.push item.record_value
+    nextTick -> callback null, values
     return
 
   syncChangesFromServer: (changes, callback) ->
@@ -39,7 +48,9 @@ sampleClientStorageWrapper = (state) ->
         delete state.items[change.record_key]
       else
         if (state.deleteQ.indexOf change.record_key) is -1
-          state.items[change.record_key] = change.record_value
+          state.items[change.record_key] =
+            index_values: change.index_values
+            record_value: change.record_value
 
     state.after = changes[changes.length-1].change_id
 
@@ -58,7 +69,8 @@ sampleClientStorageWrapper = (state) ->
       changes.push
         change_type: 'ADD'
         itemKey: addkey
-        itemValue: state.items[addkey]
+        index_values: state.items[addkey].index_values
+        itemValue: state.items[addkey].record_value
 
     for deletekey in state.deleteQ
       changes.push
@@ -67,8 +79,8 @@ sampleClientStorageWrapper = (state) ->
 
     nextTick -> callback null, changes
 
-  clearAddChangeForKey: (itemKey, callback) ->
-      i = state.addQ.indexOf itemKey
+  clearAddChangeForKey: (item_key, callback) ->
+      i = state.addQ.indexOf item_key
       if i isnt -1
         state.addQ.splice i, 1
         nextTick -> callback null

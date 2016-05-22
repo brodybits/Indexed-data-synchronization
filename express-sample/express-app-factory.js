@@ -21,7 +21,7 @@
     app.post('/addStoreRecord', function(req, res) {
       var b;
       b = req.body;
-      return db.addStoreRecord(b.storeName, b.key, b.value).then(function() {
+      return db.addStoreRecord(b.storeName, b.key, b.index_values, b.value).then(function() {
         res.status(200);
         return res.send();
       }, function(error) {

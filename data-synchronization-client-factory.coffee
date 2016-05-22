@@ -13,7 +13,7 @@ flushChanges = (changes, clientStorage, serverProxy, callback) ->
           flushChanges changes, clientStorage, serverProxy, callback
 
     else
-      serverProxy.addItem change.itemKey, change.itemValue, (errorOrNull) ->
+      serverProxy.addItem change.itemKey, change.index_values, change.itemValue, (errorOrNull) ->
         if !!errorOrNull then return callback errorOrNull
         clientStorage.clearAddChangeForKey change.itemKey, (errorOrNull) ->
           if !!errorOrNull then return callback errorOrNull
@@ -41,8 +41,8 @@ selfSync = (clientStorage, serverProxy, callback) ->
           flush clientStorage, serverProxy, callback
 
 newClient = (clientStorage, serverProxy) ->
-  addItem: (itemKey, itemValue, callback) ->
-    clientStorage.addItem itemKey, itemValue, (errorOrNull) ->
+  addItem: (itemKey, indexValues, itemValue, callback) ->
+    clientStorage.addItem itemKey, indexValues, itemValue, (errorOrNull) ->
       if !!errorOrNull then return callback errorOrNull
 
       selfSync clientStorage, serverProxy, (error_ignored) ->
@@ -56,6 +56,8 @@ newClient = (clientStorage, serverProxy) ->
         callback null
 
   getItemValue: clientStorage.getItemValue
+
+  getItemValuesForIndex: clientStorage.getItemValuesForIndex
 
   sync: (callback) ->
     selfSync clientStorage, serverProxy, callback

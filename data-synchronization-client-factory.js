@@ -23,7 +23,7 @@
           });
         });
       } else {
-        return serverProxy.addItem(change.itemKey, change.itemValue, function(errorOrNull) {
+        return serverProxy.addItem(change.itemKey, change.index_values, change.itemValue, function(errorOrNull) {
           if (!!errorOrNull) {
             return callback(errorOrNull);
           }
@@ -71,8 +71,8 @@
 
   newClient = function(clientStorage, serverProxy) {
     return {
-      addItem: function(itemKey, itemValue, callback) {
-        return clientStorage.addItem(itemKey, itemValue, function(errorOrNull) {
+      addItem: function(itemKey, indexValues, itemValue, callback) {
+        return clientStorage.addItem(itemKey, indexValues, itemValue, function(errorOrNull) {
           if (!!errorOrNull) {
             return callback(errorOrNull);
           }
@@ -92,6 +92,7 @@
         });
       },
       getItemValue: clientStorage.getItemValue,
+      getItemValuesForIndex: clientStorage.getItemValuesForIndex,
       sync: function(callback) {
         return selfSync(clientStorage, serverProxy, callback);
       }
