@@ -41,7 +41,7 @@ describe('basic synchronization client', function() {
         expect(errorOrNull).toBe(null);
         if (!!errorOrNull) return done();
 
-        client.getItem('first-key', function(errorOrNull, maybeValue) {
+        client.getItemValue('first-key', function(errorOrNull, maybeValue) {
           expect(errorOrNull).toBe(null);
           if (!!errorOrNull) return done();
 
@@ -54,10 +54,10 @@ describe('basic synchronization client', function() {
 
             expect(maybeChanges).toBeDefined();
             expect(maybeChanges.length).toBe(1);
-            expect(maybeChanges[0].id).toBe(1);
-            expect(maybeChanges[0].type).toBe('ADD');
-            expect(maybeChanges[0].key).toBe('first-key');
-            expect(maybeChanges[0].value).toBe('first-value');
+            expect(maybeChanges[0].change_id).toBe(1);
+            expect(maybeChanges[0].change_type).toBe('ADD');
+            expect(maybeChanges[0].record_key).toBe('first-key');
+            expect(maybeChanges[0].record_value).toBe('first-value');
 
             isOnline = false;
 
@@ -72,10 +72,10 @@ describe('basic synchronization client', function() {
                 // no new store changes:
                 expect(maybeChanges).toBeDefined();
                 expect(maybeChanges.length).toBe(1);
-                expect(maybeChanges[0].id).toBe(1);
-                expect(maybeChanges[0].type).toBe('ADD');
-                expect(maybeChanges[0].key).toBe('first-key');
-                expect(maybeChanges[0].value).toBe('first-value');
+                expect(maybeChanges[0].change_id).toBe(1);
+                expect(maybeChanges[0].change_type).toBe('ADD');
+                expect(maybeChanges[0].record_key).toBe('first-key');
+                expect(maybeChanges[0].record_value).toBe('first-value');
 
                 isOnline = true;
 
@@ -94,36 +94,36 @@ describe('basic synchronization client', function() {
 
                       expect(maybeChanges).toBeDefined();
                       expect(maybeChanges.length).toBe(4);
-                      expect(maybeChanges[0].id).toBe(1);
-                      expect(maybeChanges[0].type).toBe('ADD');
-                      expect(maybeChanges[0].key).toBe('first-key');
-                      expect(maybeChanges[0].value).toBe('first-value');
-                      expect(maybeChanges[1].id).toBe(2);
-                      expect(maybeChanges[1].type).toBe('ADD');
-                      expect(maybeChanges[1].key).toBe('second-key');
-                      expect(maybeChanges[1].value).toBe('second-value');
-                      expect(maybeChanges[2].id).toBe(3);
-                      expect(maybeChanges[2].type).toBe('DELETE');
-                      expect(maybeChanges[2].key).toBe('first-key');
-                      expect(maybeChanges[3].id).toBe(4);
-                      expect(maybeChanges[3].type).toBe('ADD');
-                      expect(maybeChanges[3].key).toBe('third-key');
-                      expect(maybeChanges[3].value).toBe('third-value');
+                      expect(maybeChanges[0].change_id).toBe(1);
+                      expect(maybeChanges[0].change_type).toBe('ADD');
+                      expect(maybeChanges[0].record_key).toBe('first-key');
+                      expect(maybeChanges[0].record_value).toBe('first-value');
+                      expect(maybeChanges[1].change_id).toBe(2);
+                      expect(maybeChanges[1].change_type).toBe('ADD');
+                      expect(maybeChanges[1].record_key).toBe('second-key');
+                      expect(maybeChanges[1].record_value).toBe('second-value');
+                      expect(maybeChanges[2].change_id).toBe(3);
+                      expect(maybeChanges[2].change_type).toBe('DELETE');
+                      expect(maybeChanges[2].record_key).toBe('first-key');
+                      expect(maybeChanges[3].change_id).toBe(4);
+                      expect(maybeChanges[3].change_type).toBe('ADD');
+                      expect(maybeChanges[3].record_key).toBe('third-key');
+                      expect(maybeChanges[3].record_value).toBe('third-value');
 
-                      client.getItem('second-key', function(errorOrNull, maybeValue) {
+                      client.getItemValue('second-key', function(errorOrNull, maybeValue) {
                         expect(errorOrNull).toBe(null);
                         if (!!errorOrNull) return done();
 
                         expect(maybeValue).toBeDefined();
                         expect(maybeValue).toBe('second-value');
 
-                        client.getItem('first-key', function(errorOrNull, maybeValue) {
+                        client.getItemValue('first-key', function(errorOrNull, maybeValue) {
                           expect(errorOrNull).toBeDefined();
                           expect(errorOrNull).not.toBe(null);
                           expect(!!errorOrNull).toBe(true);
                           expect(maybeValue).not.toBeDefined();
 
-                          client.getItem('invalid-key', function(errorOrNull, maybeValue) {
+                          client.getItemValue('invalid-key', function(errorOrNull, maybeValue) {
                             expect(errorOrNull).toBeDefined();
                             expect(errorOrNull).not.toBe(null);
                             expect(!!errorOrNull).toBe(true);
@@ -133,7 +133,7 @@ describe('basic synchronization client', function() {
                               expect(errorOrNull).toBe(null);
                               if (!!errorOrNull) return done();
 
-                              client.getItem('third-key', function(errorOrNull, maybeValue) {
+                              client.getItemValue('third-key', function(errorOrNull, maybeValue) {
                                 expect(errorOrNull).toBe(null);
                                 if (!!errorOrNull) return done();
 

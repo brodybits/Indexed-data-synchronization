@@ -5,23 +5,19 @@ bodyParser = require 'body-parser'
 
 promisify = require 'promisify-node'
 
-DEFAULT_DB_NAME = ':memory:'
-DEFAULT_STORE_NAME = 'MyStore'
-
-start = (dbname = DEFAULT_DB_NAME, storeName = DEFAULT_STORE_NAME) ->
+start = (serverdb) ->
   app = express()
   app.use bodyParser.json()
 
-  db1 = factory.newSQLiteDataStorage dbname
-  db = promisify db1, undefined, true
-  db.addStore storeName
+  db = promisify serverdb, undefined, true
 
+  # Installation/connectivity test function:
   app.post '/echoBody', (req, res) ->
     res.send req.body
 
-  app.post '/add', (req, res) ->
+  app.post '/addStoreRecord', (req, res) ->
     b = req.body
-    db.addStoreRecord storeName, b.key, b.value
+    db.addStoreRecord b.storeName, b.key, b.value
     .then ->
       res.status 200
       res.send()
@@ -29,9 +25,9 @@ start = (dbname = DEFAULT_DB_NAME, storeName = DEFAULT_STORE_NAME) ->
       res.status 400
       res.send()
 
-  app.post '/delete', (req, res) ->
+  app.post '/deleteStoreRecord', (req, res) ->
     b = req.body
-    db.deleteStoreRecord storeName, b.key
+    db.deleteStoreRecord b.storeName, b.key
     .then ->
       res.status 200
       res.send()
@@ -39,18 +35,20 @@ start = (dbname = DEFAULT_DB_NAME, storeName = DEFAULT_STORE_NAME) ->
       res.status 400
       res.send()
 
-  app.get '/get', (req, res) ->
+  # XXX FUTURE TBD: Use GET with URL parameters instead
+  app.post '/getStoreRecordValue', (req, res) ->
     b = req.body
-    db.getStoreRecord storeName, b.key
+    db.getStoreRecordValue b.storeName, b.key
     .then (value) ->
       res.send value
     , (error) ->
       res.status 400
       res.send()
 
-  app.get '/changes', (req, res) ->
+  # XXX FUTURE TBD: Use GET with URL parameters instead
+  app.post '/getStoreChanges', (req, res) ->
     b = req.body
-    db.getStoreChanges storeName, b.after
+    db.getStoreChanges b.storeName, b.after
     .then (changes) ->
       res.send changes
     , (error) ->

@@ -9,75 +9,84 @@ var superTest = require('supertest');
 describe('express sample app', function() {
   it('super-test express sample app', function(done) {
 
-    var app = appFactory();
+    var db = factory.newSQLiteDataStorage(':memory:');
+    expect(db).toBeDefined
 
-    // TEST /get before /add to avoid initial timing issue
+    var app = appFactory(db);
+
     superTest(app)
-    .get('/get')
+    .post('/echoBody')
     .set('Content-Type', 'application/json')
-    .send({key:'invalid-key'})
+    .send({a:1})
     .expect(function(res) {
-      expect(res.status).toBe(400);
+      expect(res.status).toBe(200);
+      expect(res.text).toBe('{"a":1}');
     })
     .expect(200, function() {
 
-      superTest(app)
-      .post('/add')
-      .set('Content-Type', 'application/json')
-      .send({key:'test-key', value: 'test-value'})
-      .expect(function(res) {
-        expect(res.status).toBe(200);
-      })
-      .expect(200, function() {
+      db.addStore('MyStore', function(errorOrNull) {
+        expect(errorOrNull).toBe(null);
+        if (!!errorOrNull) return done();
 
         superTest(app)
-        .post('/add')
+        .post('/addStoreRecord')
         .set('Content-Type', 'application/json')
-        .send({key:'second-key', value: 'second-value'})
+        .send({storeName: 'MyStore', key:'test-key', value: 'test-value'})
         .expect(function(res) {
           expect(res.status).toBe(200);
         })
         .expect(200, function() {
 
           superTest(app)
-          .post('/delete')
+          .post('/addStoreRecord')
           .set('Content-Type', 'application/json')
-          .send({key:'test-key'})
+          .send({storeName: 'MyStore', key:'second-key', value: 'second-value'})
           .expect(function(res) {
             expect(res.status).toBe(200);
           })
           .expect(200, function() {
 
             superTest(app)
-            .get('/get')
+            .post('/deleteStoreRecord')
             .set('Content-Type', 'application/json')
-            .send({key:'second-key'})
+            .send({storeName: 'MyStore', key:'test-key'})
             .expect(function(res) {
               expect(res.status).toBe(200);
-              expect(res.text).toBe('second-value');
             })
             .expect(200, function() {
 
               superTest(app)
-              .get('/get')
+              .post('/getStoreRecordValue')
               .set('Content-Type', 'application/json')
-              .send({key:'test-key'})
+              .send({storeName: 'MyStore', key:'second-key'})
               .expect(function(res) {
-                expect(res.status).toBe(400);
+                expect(res.status).toBe(200);
+                expect(res.text).toBe('second-value');
               })
               .expect(200, function() {
 
                 superTest(app)
-                .get('/changes')
+                .post('/getStoreRecordValue')
                 .set('Content-Type', 'application/json')
-                .send({after: 1})
+                .send({storeName: 'MyStore', key:'test-key'})
                 .expect(function(res) {
-                  expect(res.status).toBe(200);
-                  expect(res.text).toBe(
-                    '[{"id":2,"key":"second-key","type":"ADD","value":"second-value"},' +
-                    '{"id":3,"key":"test-key","type":"DELETE","value":null}]');
+                  expect(res.status).toBe(400);
                 })
-                .expect(200, done);
+                .expect(200, function() {
+
+                  superTest(app)
+                  .post('/getStoreChanges')
+                  .set('Content-Type', 'application/json')
+                  .send({storeName: 'MyStore', after: 1})
+                  .expect(function(res) {
+                    expect(res.status).toBe(200);
+                    expect(res.text).toBe(
+                      '[{"change_id":2,"change_type":"ADD","record_key":"second-key","record_value":"second-value"},' +
+                      '{"change_id":3,"change_type":"DELETE","record_key":"test-key","record_value":null}]');
+                  })
+                  .expect(200, done);
+
+                })
 
               })
 

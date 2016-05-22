@@ -10,12 +10,12 @@
       return callback(null);
     } else {
       change = changes.shift();
-      if (change.type === 'DELETE') {
-        return serverProxy.deleteItem(change.key, function(errorOrNull) {
+      if (change.change_type === 'DELETE') {
+        return serverProxy.deleteItem(change.itemKey, function(errorOrNull) {
           if (!!errorOrNull) {
             return callback(errorOrNull);
           }
-          return clientStorage.clearDeleteChangeForKey(change.key, function(errorOrNull) {
+          return clientStorage.clearDeleteChangeForKey(change.itemKey, function(errorOrNull) {
             if (!!errorOrNull) {
               return callback(errorOrNull);
             }
@@ -23,11 +23,11 @@
           });
         });
       } else {
-        return serverProxy.addItem(change.key, change.value, function(errorOrNull) {
+        return serverProxy.addItem(change.itemKey, change.itemValue, function(errorOrNull) {
           if (!!errorOrNull) {
             return callback(errorOrNull);
           }
-          return clientStorage.clearAddChangeForKey(change.key, function(errorOrNull) {
+          return clientStorage.clearAddChangeForKey(change.itemKey, function(errorOrNull) {
             if (!!errorOrNull) {
               return callback(errorOrNull);
             }
@@ -71,8 +71,8 @@
 
   newClient = function(clientStorage, serverProxy) {
     return {
-      addItem: function(key, value, callback) {
-        return clientStorage.addItem(key, value, function(errorOrNull) {
+      addItem: function(itemKey, itemValue, callback) {
+        return clientStorage.addItem(itemKey, itemValue, function(errorOrNull) {
           if (!!errorOrNull) {
             return callback(errorOrNull);
           }
@@ -81,8 +81,8 @@
           });
         });
       },
-      deleteItem: function(key, callback) {
-        return clientStorage.deleteItem(key, function(errorOrNull) {
+      deleteItem: function(itemKey, callback) {
+        return clientStorage.deleteItem(itemKey, function(errorOrNull) {
           if (!!errorOrNull) {
             return callback(errorOrNull);
           }
@@ -91,7 +91,7 @@
           });
         });
       },
-      getItem: clientStorage.getItem,
+      getItemValue: clientStorage.getItemValue,
       sync: function(callback) {
         return selfSync(clientStorage, serverProxy, callback);
       }

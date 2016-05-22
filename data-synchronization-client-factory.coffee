@@ -5,17 +5,17 @@ flushChanges = (changes, clientStorage, serverProxy, callback) ->
     callback null
   else
     change = changes.shift()
-    if change.type is 'DELETE'
-      serverProxy.deleteItem change.key, (errorOrNull) ->
+    if change.change_type is 'DELETE'
+      serverProxy.deleteItem change.itemKey, (errorOrNull) ->
         if !!errorOrNull then return callback errorOrNull
-        clientStorage.clearDeleteChangeForKey change.key, (errorOrNull) ->
+        clientStorage.clearDeleteChangeForKey change.itemKey, (errorOrNull) ->
           if !!errorOrNull then return callback errorOrNull
           flushChanges changes, clientStorage, serverProxy, callback
 
     else
-      serverProxy.addItem change.key, change.value, (errorOrNull) ->
+      serverProxy.addItem change.itemKey, change.itemValue, (errorOrNull) ->
         if !!errorOrNull then return callback errorOrNull
-        clientStorage.clearAddChangeForKey change.key, (errorOrNull) ->
+        clientStorage.clearAddChangeForKey change.itemKey, (errorOrNull) ->
           if !!errorOrNull then return callback errorOrNull
           flushChanges changes, clientStorage, serverProxy, callback
 
@@ -41,21 +41,21 @@ selfSync = (clientStorage, serverProxy, callback) ->
           flush clientStorage, serverProxy, callback
 
 newClient = (clientStorage, serverProxy) ->
-  addItem: (key, value, callback) ->
-    clientStorage.addItem key, value, (errorOrNull) ->
+  addItem: (itemKey, itemValue, callback) ->
+    clientStorage.addItem itemKey, itemValue, (errorOrNull) ->
       if !!errorOrNull then return callback errorOrNull
 
       selfSync clientStorage, serverProxy, (error_ignored) ->
         callback null
 
-  deleteItem: (key, callback) ->
-    clientStorage.deleteItem key, (errorOrNull) ->
+  deleteItem: (itemKey, callback) ->
+    clientStorage.deleteItem itemKey, (errorOrNull) ->
       if !!errorOrNull then return callback errorOrNull
 
       selfSync clientStorage, serverProxy, (error_ignored) ->
         callback null
 
-  getItem: clientStorage.getItem
+  getItemValue: clientStorage.getItemValue
 
   sync: (callback) ->
     selfSync clientStorage, serverProxy, callback

@@ -6,6 +6,8 @@ License: ISC OR MIT
 
 I can hereby testify that this project is completely my own work and not subject to agreements with any other parties. In case of code written under direct guidance from sample code the link is given for reference. In case I accept contributions from any others I will require CLA with similar statements. The license may be changed at some point in the future.
 
+Status: EXPERIMENTAL: under development with API subject to change
+
 ## Data stored
 
 Data is stored in key-value format where:
@@ -32,14 +34,11 @@ The implementation is maintained in CoffeeScript which is compiled by the follow
 
 One or more key-value stores may be stored in a sqlite database using node-sqlite3.
 
-A log table and a key index are CREATEd for each store.
+A log table ~~and a key index~~ are CREATEd for each store.
 
-There is a sample Express REST interface in the `express-sample` subdirectory. Note that Express is favored over just using Connect to support PassportJS in the future.
+There is a sample Express REST interface in the `express-sample` subdirectory. Note that Express is favored over just using Connect to support use with PassportJS.
 
 FUTURE TBD: Swappable storage layers possible for SQLite, Postgres, redis, etc.
-
-FUTURE TODO:
-- Client-side data synchronization library
 
 NOTICE: This project assumes a recent version of Node.js with a Promise implementation.
 
@@ -55,25 +54,39 @@ Client-side:
 
 ## Major TODOs
 
+- Client-side storage using SQLite plugin/Web SQL/IndexedDB with failure-safe transactions
+- Fix server-side to use failure-safe transactions (BEGIN/COMMIT/ROLLBACK)
 - Document the API/usage
 - Improve factory API consistency
 - Improve/further testing of two-way client/server data synchronization
 - Check that each key is really unique and that a record for a key is only deleted once
-- Automatic testing, with emphasis on: error handling, verify key is really unique, delete for key that is not present or already deleted
+- More automatic testing, with emphasis on: error handling, verify key is really unique, delete for key that is not present or already deleted
+- Distinguish temporary errors vs permanent errors during add/delete/sync
 - Additional indexed keys
 - Subscriptions to store changes (support some kind of a "notification" system)
+- Periodic cleanup of old change history
+- VACUUM or AUTOVACUUM
+
+## Future TBD
+
+May be in a higher-layer API library:
 - Multi-user management
 - Limited multi-user shared stores
 - REST multi-user security using something like PassportJS
-- Periodically cleanup old history
-- VACUUM or AUTOVACUUM
+- Server-side data clustering
+
+## Other FUTURE TBD
+
+- Swappable storage layers possible for SQLite, Postgres, redis, etc.
+- Replace CoffeeScript with ES5/ES6
 
 ## Other TODOs
 
 - Drop store from a database
-- Replace CoffeeScript with ES6
 
 ## References
 
-- https://github.com/axemclion/IndexedDBShim (inspiration)
-- http://www.confluent.io/blog/turning-the-database-inside-out-with-apache-samza/ (inspiration)
+Sources of inspiration:
+- https://github.com/axemclion/IndexedDBShim
+- http://www.confluent.io/blog/turning-the-database-inside-out-with-apache-samza/
+- https://en.wikipedia.org/wiki/Internet_Message_Access_Protocol

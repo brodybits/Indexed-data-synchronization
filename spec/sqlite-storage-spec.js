@@ -25,20 +25,20 @@ describe('basic sqlite storage', function() {
             expect(errorOrNull).toBe(null);
             if (!!errorOrNull) return done();
 
-            db.getStoreRecord('MyStore', 'second-key', function(errorOrNull, maybeValue) {
+            db.getStoreRecordValue('MyStore', 'second-key', function(errorOrNull, maybeValue) {
               expect(errorOrNull).toBe(null);
               if (!!errorOrNull) return done();
 
               expect(maybeValue).toBeDefined();
               expect(maybeValue).toBe('second-value');
 
-              db.getStoreRecord('MyStore', 'first-key', function(errorOrNull, maybeValue) {
+              db.getStoreRecordValue('MyStore', 'first-key', function(errorOrNull, maybeValue) {
                 expect(errorOrNull).toBeDefined();
                 expect(errorOrNull).not.toBe(null);
                 expect(!!errorOrNull).toBe(true);
                 expect(maybeValue).not.toBeDefined();
 
-                db.getStoreRecord('MyStore', 'invalid-key', function(errorOrNull, maybeValue) {
+                db.getStoreRecordValue('MyStore', 'invalid-key', function(errorOrNull, maybeValue) {
                   expect(errorOrNull).toBeDefined();
                   expect(errorOrNull).not.toBe(null);
                   expect(!!errorOrNull).toBe(true);
@@ -52,13 +52,13 @@ describe('basic sqlite storage', function() {
                     // EXPECTED RESULT:
                     expect(maybeChanges).toBeDefined();
                     expect(maybeChanges.length).toBe(2);
-                    expect(maybeChanges[0].id).toBe(2);
-                    expect(maybeChanges[0].type).toBe('ADD');
-                    expect(maybeChanges[0].key).toBe('second-key');
-                    expect(maybeChanges[0].value).toBe('second-value');
-                    expect(maybeChanges[1].id).toBe(3);
-                    expect(maybeChanges[1].type).toBe('DELETE');
-                    expect(maybeChanges[1].key).toBe('first-key');
+                    expect(maybeChanges[0].change_id).toBe(2);
+                    expect(maybeChanges[0].change_type).toBe('ADD');
+                    expect(maybeChanges[0].record_key).toBe('second-key');
+                    expect(maybeChanges[0].record_value).toBe('second-value');
+                    expect(maybeChanges[1].change_id).toBe(3);
+                    expect(maybeChanges[1].change_type).toBe('DELETE');
+                    expect(maybeChanges[1].record_key).toBe('first-key');
 
                     done();
                   });
@@ -90,7 +90,7 @@ describe('basic sqlite storage promisify-ed', function() {
       return db.deleteStoreRecord('MyStore', 'first-key');
 
     }).then(function() {
-      return db.getStoreRecord('MyStore', 'second-key');
+      return db.getStoreRecordValue('MyStore', 'second-key');
     }).then(function(value) {
       expect(value).toBe('second-value');
 
@@ -101,7 +101,7 @@ describe('basic sqlite storage promisify-ed', function() {
       done();
 
     }).then(function() {
-      return db.getStoreRecord('MyStore', 'first-key');
+      return db.getStoreRecordValue('MyStore', 'first-key');
     }).then(function(value) {
       // NOT EXPECTED:
       expect(false).toBe(true);
@@ -111,7 +111,7 @@ describe('basic sqlite storage promisify-ed', function() {
       return Promise.resolve();
 
     }).then(function() {
-      return db.getStoreRecord('MyStore', 'invalid-key');
+      return db.getStoreRecordValue('MyStore', 'invalid-key');
     }).then(function(value) {
       // NOT EXPECTED:
       expect(false).toBe(true);
@@ -126,13 +126,13 @@ describe('basic sqlite storage promisify-ed', function() {
       // EXPECTED RESULT:
       expect(changes).toBeDefined();
       expect(changes.length).toBe(2);
-      expect(changes[0].id).toBe(2);
-      expect(changes[0].type).toBe('ADD');
-      expect(changes[0].key).toBe('second-key');
-      expect(changes[0].value).toBe('second-value');
-      expect(changes[1].id).toBe(3);
-      expect(changes[1].type).toBe('DELETE');
-      expect(changes[1].key).toBe('first-key');
+      expect(changes[0].change_id).toBe(2);
+      expect(changes[0].change_type).toBe('ADD');
+      expect(changes[0].record_key).toBe('second-key');
+      expect(changes[0].record_value).toBe('second-value');
+      expect(changes[1].change_id).toBe(3);
+      expect(changes[1].change_type).toBe('DELETE');
+      expect(changes[1].record_key).toBe('first-key');
 
     }, function(error) {
       // UNEXPECTED ERROR:

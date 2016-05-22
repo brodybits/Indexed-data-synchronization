@@ -10,19 +10,19 @@
 
   sampleClientStorageWrapper = function(state) {
     return {
-      addItem: function(key, value, callback) {
-        state.items[key] = value;
-        state.addQ.push(key);
+      addItem: function(record_key, value, callback) {
+        state.items[record_key] = value;
+        state.addQ.push(record_key);
         nextTick(function() {
           return callback(null);
         });
       },
-      deleteItem: function(key, callback) {
+      deleteItem: function(record_key, callback) {
         var i;
-        delete state.items[key];
-        i = state.addQ.indexOf(key);
+        delete state.items[record_key];
+        i = state.addQ.indexOf(record_key);
         if (i === -1) {
-          state.deleteQ.push(key);
+          state.deleteQ.push(record_key);
         } else {
           state.addQ.splice(i, 1);
         }
@@ -30,12 +30,12 @@
           return callback(null);
         });
       },
-      getItem: function(key, callback) {
+      getItemValue: function(itemKey, callback) {
         var v;
-        v = state.items[key];
+        v = state.items[itemKey];
         if (v === void 0) {
           nextTick(function() {
-            return callback(new Error("Key " + key + " not found"));
+            return callback(new Error("Key " + itemKey + " not found"));
           });
         } else {
           nextTick(function() {
@@ -52,15 +52,15 @@
         }
         for (j = 0, len = changes.length; j < len; j++) {
           change = changes[j];
-          if (change.type === 'DELETE') {
-            delete state.items[change.key];
+          if (change.change_type === 'DELETE') {
+            delete state.items[change.record_key];
           } else {
-            if ((state.deleteQ.indexOf(change.key)) === -1) {
-              state.items[change.key] = change.value;
+            if ((state.deleteQ.indexOf(change.record_key)) === -1) {
+              state.items[change.record_key] = change.record_value;
             }
           }
         }
-        state.after = changes[changes.length - 1].id;
+        state.after = changes[changes.length - 1].change_id;
         return nextTick(function() {
           return callback(null);
         });
@@ -81,26 +81,26 @@
         for (j = 0, len = ref.length; j < len; j++) {
           addkey = ref[j];
           changes.push({
-            type: 'ADD',
-            key: addkey,
-            value: state.items[addkey]
+            change_type: 'ADD',
+            itemKey: addkey,
+            itemValue: state.items[addkey]
           });
         }
         ref1 = state.deleteQ;
         for (k = 0, len1 = ref1.length; k < len1; k++) {
           deletekey = ref1[k];
           changes.push({
-            type: 'DELETE',
-            key: deletekey
+            change_type: 'DELETE',
+            itemKey: deletekey
           });
         }
         return nextTick(function() {
           return callback(null, changes);
         });
       },
-      clearAddChangeForKey: function(key, callback) {
+      clearAddChangeForKey: function(itemKey, callback) {
         var i;
-        i = state.addQ.indexOf(key);
+        i = state.addQ.indexOf(itemKey);
         if (i !== -1) {
           state.addQ.splice(i, 1);
           return nextTick(function() {
@@ -108,13 +108,13 @@
           });
         } else {
           return nextTick(function() {
-            return callback(new Error("no add change for key " + key));
+            return callback(new Error("no add change for item key " + itemKey));
           });
         }
       },
-      clearDeleteChangeForKey: function(key, callback) {
+      clearDeleteChangeForKey: function(itemKey, callback) {
         var i;
-        i = state.deleteQ.indexOf(key);
+        i = state.deleteQ.indexOf(itemKey);
         if (i !== -1) {
           state.deleteQ.splice(i, 1);
           return nextTick(function() {
@@ -122,7 +122,7 @@
           });
         } else {
           return nextTick(function() {
-            return callback(new Error("no add change for key " + key));
+            return callback(new Error("no delete change for item key " + itemKey));
           });
         }
       }

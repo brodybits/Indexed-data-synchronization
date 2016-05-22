@@ -11,36 +11,36 @@
   newSQLiteDataStorageWrapper = function(db) {
     return {
       addStore: function(storeName, callback) {
-        db.run("CREATE TABLE " + storeName + " (id INTEGER PRIMARY KEY AUTOINCREMENT, key TEXT, type TEXT, value TEXT)", function(errorOrNull) {
+        db.run("CREATE TABLE " + storeName + " (change_id INTEGER PRIMARY KEY AUTOINCREMENT, change_type TEXT, record_key TEXT, record_value TEXT)", function(errorOrNull) {
           if (!!errorOrNull) {
             return callback(errorOrNull);
           } else {
-            return db.run("CREATE INDEX " + storeName + "_KEY_INDEX on " + storeName + " (key)", function(errorOrNull) {
+            return db.run("CREATE INDEX " + storeName + "_KEY_INDEX on " + storeName + " (record_key)", function(errorOrNull) {
               return callback(null);
             });
           }
         });
       },
-      addStoreRecord: function(storeName, key, value, callback) {
-        db.run("INSERT INTO " + storeName + " (key, type, value) VALUES (?,?,?)", [key, ADD, value], callback);
+      addStoreRecord: function(storeName, record_key, record_value, callback) {
+        db.run("INSERT INTO " + storeName + " (change_type, record_key, record_value) VALUES (?,?,?)", [ADD, record_key, record_value], callback);
       },
-      deleteStoreRecord: function(storeName, key, callback) {
-        db.run("INSERT INTO " + storeName + " (key, type) VALUES (?,?)", [key, DELETE], callback);
+      deleteStoreRecord: function(storeName, record_key, callback) {
+        db.run("INSERT INTO " + storeName + " (change_type, record_key) VALUES (?,?)", [DELETE, record_key], callback);
       },
-      getStoreRecord: function(storeName, key, callback) {
-        db.all("SELECT type, value FROM " + storeName + " WHERE key=?", [key], function(errorOrNull, maybeRows) {
+      getStoreRecordValue: function(storeName, record_key, callback) {
+        db.all("SELECT change_type, record_value FROM " + storeName + " WHERE record_key=?", [record_key], function(errorOrNull, maybeRows) {
           if (!!errorOrNull) {
             return callback(errorOrNull);
           }
-          if (!!maybeRows && maybeRows.length === 1 && maybeRows[0].type === ADD) {
-            return callback(null, maybeRows[0].value);
+          if (!!maybeRows && maybeRows.length === 1 && maybeRows[0].change_type === ADD) {
+            return callback(null, maybeRows[0].record_value);
           } else {
             return callback(new Error("not found"));
           }
         });
       },
       getStoreChanges: function(storeName, after, callback) {
-        return db.all("SELECT * FROM " + storeName + " WHERE id>?", [after], callback);
+        return db.all("SELECT * FROM " + storeName + " WHERE change_id>?", [after], callback);
       }
     };
   };
